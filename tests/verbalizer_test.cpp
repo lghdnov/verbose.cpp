@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "verbalizer/error.hpp"
 #include "verbalizer/verbalizer.hpp"
 
 using verbose::VerbalizerRegistry;

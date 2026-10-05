@@ -34,24 +34,10 @@ constexpr std::array<const char *, 10> kHundreds = {
     "nine hundred ",
 };
 
-constexpr std::array<const std::array<const char *, 5>, 3> kScaleWords = {{
-    {{"", "thousand ", "million ", "billion ", "trillion "}},
-    {{"", "thousand ", "million ", "billion ", "trillion "}},
-    {{"", "thousand ", "million ", "billion ", "trillion "}},
-}};
+constexpr std::array<const char *, 5> kScaleWords = {
+    {"", "thousand ", "million ", "billion ", "trillion "}};
 
 const TensUnitsTable kTensUnits = make_tens_units_table(kUnits, kTeens, kTens);
-
-const PluralTable kPlural = [] {
-  PluralTable table{};
-  for (std::size_t tens = 0; tens < 10; ++tens) {
-    for (std::size_t units = 0; units < 10; ++units) {
-      table[tens][units] =
-          (tens == 0 && units == 1) ? PluralForm::One : PluralForm::Many;
-    }
-  }
-  return table;
-}();
 
 class EnglishVerbalizer : public VerbalizerBackend {
 public:
@@ -68,16 +54,14 @@ public:
     return kTensUnits[tens_digit][units_digit];
   }
 
-  const char *scale_form(std::size_t scale_idx,
-                         PluralForm form) const override {
-    return scale_idx < kScaleWords[0].size()
-               ? kScaleWords[static_cast<std::size_t>(form)][scale_idx]
-               : "";
+  const char *scale_form(std::size_t scale_idx, PluralForm) const override {
+    return scale_idx < kScaleWords.size() ? kScaleWords[scale_idx] : "";
   }
 
   PluralForm plural(std::size_t tens_digit,
                     std::size_t units_digit) const override {
-    return kPlural[tens_digit][units_digit];
+    return tens_digit == 0 && units_digit == 1 ? PluralForm::One
+                                               : PluralForm::Many;
   }
 
   Gender unit_gender_for_scale(std::size_t) const override {
