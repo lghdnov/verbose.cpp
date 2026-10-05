@@ -10,11 +10,15 @@ constexpr std::size_t kMaxDigits = 15;
 
 void verbalize_number(const VerbalizerBackend &lang, std::uint64_t n,
                       std::string &out) {
+  if (n == 0) {
+    out.append(lang.zero());
+    return;
+  }
   if (n >= kMax) {
     throw VerbalizeError(n, kMax);
   }
 
-  std::array<uint8_t, kMaxDigits> digits;
+  std::array<uint8_t, kMaxDigits> digits{};
   std::size_t count = 0;
   for (std::size_t rest = n; rest; rest /= 10)
     digits[count++] = rest % 10;
@@ -42,9 +46,6 @@ void verbalize_number(const VerbalizerBackend &lang, std::uint64_t n,
 std::string verbalize(const VerbalizerBackend &lang, std::uint64_t n) {
   std::string out;
   out.reserve(128);
-
-  if (n == 0)
-    return out.append(lang.zero());
 
   verbalize_number(lang, n, out);
   out.pop_back();
